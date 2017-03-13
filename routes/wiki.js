@@ -19,8 +19,9 @@ router.post('/', function(req, res, next){
     });
 
     page.save();
-    console.log('REQUEST: ', page);
-    res.redirect('/');
+    res.json(page);
+    // res.redirect('/')
+    console.log("URL:  ", page)
 });
 
 
@@ -41,6 +42,21 @@ router.put('/users/123', function (req, res, next) {
 router.delete('/users/123', function (req, res, next){
 
 });
+
+router.get('/:url', function(req, res, next) {
+    Page.findOne({
+        where: {
+            urlTitle: req.params.url
+        }
+    })
+    .then(function(foundPage) {
+        res.render('wikipage', {title: foundPage.title, content: foundPage.content})
+        // res.json(foundPage);
+    })
+    .catch(next);
+
+
+})
 
 
 module.exports = router;

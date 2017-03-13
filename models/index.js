@@ -51,7 +51,7 @@ module.exports = {
 
 Page.hook('beforeValidate', function (page){
     if (page.title) {
-        var urlTitle = page.title.replace('/\s+/g', '_').replace('/\W/g', '');
+        var urlTitle = page.title.replace(/\s+/g, '_').replace(/\W/g, '');
         page.urlTitle = urlTitle;
     } else {
         page.urlTitle = Math.random().toString(36).substring(2, 7);
