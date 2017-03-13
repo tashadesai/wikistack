@@ -18,44 +18,52 @@ router.get('/add', function(req, res, next){
     res.render('addpage');
 });
 router.post('/', function(req, res, next){
-    var page = Page.build({
-        title: req.body.title,
-        content: req.body.content,
-    });
 
     User.findOrCreate({
         where: {
-            name: req.body.name
-        },
-        defaults: {
             name: req.body.name,
             email: req.body.email
         }
     })
+        .then(function (value) {
+            var user = value[0];
 
-    page.save().then(function(savedPage) {
-        res.redirect(savedPage.route);
-    }).catch(next);
+            var page = Page.build({
+                title: req.body.title,
+                content: req.body.content,
+            });
+
+            return page.save().then(function(savedPage) {
+                return savedPage.setAuthor(user);
+            });
+        })
+        .then(function(page) {
+            res.redirect(page.route)
+        })
+        .catch(next);
 });
 
 
-router.get('/users/', function(req, res, next){
-    res.send(User);
-});
-router.get('/users/:name', function(req, res, next) {
-    var name = req.params.name;
-    res.send(User.name);
-});
-router.post('/users/', function(req, res, next){
-    // console.log(req.body);
-    // res.json(req.body);
-});
-router.put('/users/123', function (req, res, next) {
+// router.get('/users/', function(req, res, next){
+//     router.get('/', function(req, res, next) {
+//   User.findAll({}).then(function(users){
+//     res.render('users', { users: users });
+//   }).catch(next);
+// });
+// });
+// router.get('/users/:id', function(req, res, next) {
+//     res.render('', {})
+// });
+// router.post('/users/', function(req, res, next){
+//     // console.log(req.body);
+//     // res.json(req.body);
+// });
+// router.put('/users/123', function (req, res, next) {
 
-});
-router.delete('/users/123', function (req, res, next){
+// });
+// router.delete('/users/123', function (req, res, next){
 
-});
+// });
 
 router.get('/:url', function(req, res, next) {
     Page.findOne({
@@ -64,7 +72,9 @@ router.get('/:url', function(req, res, next) {
         }
     })
     .then(function(foundPage) {
-        res.render('wikipage', {title: foundPage.title, content: foundPage.content})
+        res.render('wikipage', {title: foundPage.title, content: foundPage.content,
+                                authorid: foundPage.authorId})
+        console.log(foundPage.name)
         // res.json(foundPage);
     })
     .catch(next);

@@ -5,6 +5,7 @@ var express = require('express');
 var wikiRouter = require('./routes/wiki');
 var bodyParser = require('body-parser');
 var app = express();
+var usersRouter = require('./routes/users')
 
 app.use(express.static('stylesheets'));
 app.use(bodyParser.urlencoded( { extended : false } ));
@@ -36,6 +37,7 @@ app.set('view engine', 'html');
 // when res.render works with html files, have it use nunjucks to do so
 app.engine('html', nunjucks.render);
 app.use('/wiki', wikiRouter);
+app.use('/users', usersRouter);
 
 
 //turning logging off
