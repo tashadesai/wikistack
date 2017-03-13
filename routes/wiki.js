@@ -5,12 +5,17 @@ var Page = dataBase.Page;
 var User = dataBase.User;
 
 router.get('/', function(req, res, next){
-    res.redirect('/');
+
+    Page.findAll()
+        .then(function(pages){
+            console.log("PAGE : ", pages[0].title)
+            res.render('index', {pages: pages})
+        })
+        .catch(next);
 });
+
 router.get('/add', function(req, res, next){
-    //console.log("get method");
     res.render('addpage');
-    //('got to GET /wiki/add');
 });
 router.post('/', function(req, res, next){
     var page = Page.build({
@@ -18,10 +23,19 @@ router.post('/', function(req, res, next){
         content: req.body.content,
     });
 
-    page.save();
-    res.json(page);
-    // res.redirect('/')
-    console.log("URL:  ", page)
+    User.findOrCreate({
+        where: {
+            name: req.body.name
+        },
+        defaults: {
+            name: req.body.name,
+            email: req.body.email
+        }
+    })
+
+    page.save().then(function(savedPage) {
+        res.redirect(savedPage.route);
+    }).catch(next);
 });
 
 

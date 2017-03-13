@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-var db = new Sequelize('postgres://localhost:5432/wikistack');
+var db = new Sequelize('postgres://localhost:5432/wikistack', {logging: false});
 
 var Page = db.define('page', {
   title: {
@@ -19,9 +19,9 @@ var Page = db.define('page', {
     type: Sequelize.ENUM('open', 'closed')
     },
   date: {
-    type: Sequelize.DATE,
-    defaultValue: Sequelize.NOW
-  }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
+    }
 },
     {getterMethods: {
     route : function() {
@@ -57,3 +57,5 @@ Page.hook('beforeValidate', function (page){
         page.urlTitle = Math.random().toString(36).substring(2, 7);
     }
 });
+
+Page.belongsTo(User, { as: 'author' });
